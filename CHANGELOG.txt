@@ -1,0 +1,19 @@
+CHANGELOG
+
+1.0.0:
+- different py files for service and script.
+- move pidfiles and sd files to ram variables
+- common file for chared functions
+- countdown when shutdown without arguments (e.g. from program addons menu)
+
+0.9.0:
+- Possibility to change temp location (e.g. ram-disk)
+
+0.8.0:
+- Keep service always running, pass shutdown message
+- Possibility for suspend and hibernate
+
+0.7.0: 
+- Starting point, based on http://vdr4bj1.no-ip.org, birger.jesch@gmail.com, version 0.2.8
+
+
