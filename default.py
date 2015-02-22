@@ -385,7 +385,7 @@ class Manager(object):
         bWasInBusyLoop = False
         idle = xbmc.getGlobalIdleTime()
         counter = 0
-        counts = CYLCE/IDLECYLCE
+        counts = CYCLE/IDLECYCLE
 
         ### START MAIN LOOP ###
         while (not xbmc.abortRequested) and (not bKillMain):
