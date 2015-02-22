@@ -132,18 +132,21 @@ def writeLog(message, level=xbmc.LOGNOTICE, forcePrint=False):
         incParam(MSGCNT)
         return
     else:
-        if not os.path.exists(__datapath__): os.makedirs(__datapath__)
-        if not os.path.isfile(__logfile__):
-            __f = open(__logfile__, 'w')
-        else:
-            __f = open(__logfile__, 'a')
-        if num(getParam(MSGCNT)) > 0:
-            __f.write('%s: >>> Last message repeated %s time(s)\n' % (
-                datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'), num(getParam(MSGCNT))))
-        setParam(MSG, message)
-        clearParam(MSGCNT)
-        __f.write('%s: %s\n' % (datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'), message.encode('utf-8')))
-        __f.close()
+        try:
+            if not os.path.exists(__datapath__): os.makedirs(__datapath__)
+            if not os.path.isfile(__logfile__):
+                __f = open(__logfile__, 'w')
+            else:
+                __f = open(__logfile__, 'a')
+            if num(getParam(MSGCNT)) > 0:
+                __f.write('%s: >>> Last message repeated %s time(s)\n' % (
+                    datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'), num(getParam(MSGCNT))))
+            setParam(MSG, message)
+            clearParam(MSGCNT)
+            __f.write('%s: %s\n' % (datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'), message.encode('utf-8')))
+            __f.close()
+        except Exception, e:
+            xbmc.log('%s: %s' % (__addonname__, e), xbmc.LOGERROR)
         xbmc.log('%s: %s' % (__addonname__, message.encode('utf-8')), level)    
 
 def getShutdownAction():

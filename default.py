@@ -384,13 +384,21 @@ class Manager(object):
         bBtnPwr = common.CMD_NONE
         bWasInBusyLoop = False
         idle = xbmc.getGlobalIdleTime()
+        counter = 0
+        counts = CYLCE/IDLECYLCE
 
         ### START MAIN LOOP ###
         while (not xbmc.abortRequested) and (not bKillMain):
             time.sleep(IDLECYCLE)
             #idle += IDLECYCLE
 
-            self.getSysState()
+            #check timeout possibilities !!!!, do this once in 15 loops !!!!!!!!!!
+            if (counter >= counts):
+                self.getSysState()
+                counter = 0
+            else:
+                counter += 1
+
             # Check for power button
             bBtnPwr = self.getShutdown(bBtnPwr)
             #common.writeLog("Button %d" % (bBtnPwr))
@@ -425,8 +433,10 @@ class Manager(object):
                         if not self.__recTitles: self.calcNextSched()
                         if not bBtnPwr:
                             self.deliverMail(__LS__(30047) % (HOST, item) + self.__wakeUpMessage)
+                
                 self.getSysState()
                 bBtnPwr = self.getShutdown(bBtnPwr)
+
                 if not self.__ScreensaverActive: self.__windowID = xbmcgui.getCurrentWindowId()
 
                 common.writeLog('Service polling Net/Post/Rec/EPG: {0:04b}'.format(self.__bState))
