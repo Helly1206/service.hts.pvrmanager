@@ -227,7 +227,7 @@ class Manager(object):
         nodedata = []
         while self.__conn_established:
             try:
-                __f = urllib2.urlopen(self.__server + TVHPORT)
+                __f = urllib2.urlopen(self.__server + TVHPORT) #, timeout=mytimeout
                 __xmlfile = __f.read()
                 self.__xml = minidom.parseString(__xmlfile)
                 __f.close()
@@ -320,6 +320,7 @@ class Manager(object):
                 __LS__(30024), __LS__(30018 + self.__wakeUpReason) % (self.__wakeUp.strftime('%d.%m.%Y %H:%M')))
             return True
         else:
+            self.__wakeUpUT = 0
             return False
 
     def setWakeup(self, methd):

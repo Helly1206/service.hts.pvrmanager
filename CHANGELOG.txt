@@ -1,5 +1,9 @@
 CHANGELOG
 
+1.0.2:
+- Bugfixes
+- Fix for insomnia after recording (htpc boots every day after recording) 
+
 1.0.0:
 - different py files for service and script.
 - move pidfiles and sd files to ram variables
