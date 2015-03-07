@@ -1,5 +1,8 @@
 CHANGELOG
 
+1.0.3:
+- Added dutch language files
+
 1.0.2:
 - Bugfixes
 - Fix for insomnia after recording (htpc boots every day after recording) 
