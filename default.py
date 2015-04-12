@@ -55,7 +55,7 @@ class Manager(object):
     def __init__(self):
 
         self.__conn_established = None
-        self.__xml = None
+        #self.__xml = None
         self.__bState = None
         self.__recTitles = []
         self.__rndProcNum = random.randint(1, 1024)
@@ -229,12 +229,14 @@ class Manager(object):
             try:
                 __f = urllib2.urlopen(self.__server + TVHPORT) #, timeout=mytimeout
                 __xmlfile = __f.read()
-                self.__xml = minidom.parseString(__xmlfile)
+                __xml = minidom.parseString(__xmlfile)
                 __f.close()
-                nodes = self.__xml.getElementsByTagName(xmlnode)
+                nodes = __xml.getElementsByTagName(xmlnode)
                 if nodes:
                     for node in nodes:
                         nodedata.append(node.childNodes[0].data)
+                    del nodes
+                __xml.unlink()
                 break
             except Exception, e:
                 common.writeLog("Could not read from %s" % (self.__server), xbmc.LOGERROR)

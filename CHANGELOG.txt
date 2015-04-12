@@ -1,5 +1,8 @@
 CHANGELOG
 
+1.0.4:
+- Solved memory leak in read xml
+
 1.0.3:
 - Added dutch language files
 
