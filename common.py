@@ -69,7 +69,7 @@ def incParam(param):
 # Functions : Global                                    #
 #########################################################
 def getProcessPID(process):
-    _syscmd = subprocess.Popen(['pidof', process], stdout=subprocess.PIPE)
+    _syscmd = subprocess.Popen(['pidof','-x', process], stdout=subprocess.PIPE)
     PID = _syscmd.stdout.read().strip()
     return PID if PID > 0 else False
 
