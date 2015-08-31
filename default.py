@@ -32,7 +32,6 @@ EXTGRABBER = xbmc.translatePath(os.path.join(__path__, 'resources', 'lib', 'epgg
 
 CYCLE = 15    # polling cycle
 IDLECYCLE = 1 # polling cycle when idle
-TVHPORT = ':9981/status.xml'
 
 PLATFORM_OE = True if ('OPENELEC' in ', '.join(platform.uname()).upper()) else False
 HOST = socket.gethostname()
@@ -129,10 +128,10 @@ class Manager(object):
         while self.__maxattempts > 0:
             try:
                 pwd_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-                pwd_mgr.add_password(None, self.__server + TVHPORT, self.__user, self.__pass)
+                pwd_mgr.add_password(None, self.__server, self.__user, self.__pass)
                 handle = urllib2.HTTPBasicAuthHandler(pwd_mgr)
                 opener = urllib2.build_opener(handle)
-                opener.open(self.__server + TVHPORT)
+                opener.open(self.__server)
                 urllib2.install_opener(opener)
                 self.__conn_established = True
                 #common.writeLog('Connection to %s established' % (self.__server))
@@ -227,7 +226,7 @@ class Manager(object):
         nodedata = []
         while self.__conn_established:
             try:
-                __f = urllib2.urlopen(self.__server + TVHPORT) #, timeout=mytimeout
+                __f = urllib2.urlopen(self.__server) #, timeout=mytimeout
                 __xmlfile = __f.read()
                 __xml = minidom.parseString(__xmlfile)
                 __f.close()
