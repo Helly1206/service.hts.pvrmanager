@@ -130,7 +130,11 @@ msgctxt "#30025"
 msgid "PVR-manager service not running, unable to schedule recordings"
 msgstr ""
 
-#empty strings from id 30026 to 30029
+msgctxt "#30026"
+msgid "TVHeadend Port"
+msgstr ""
+
+#empty strings from id 30027 to 30029
 
 msgctxt "#30030"
 msgid "Communication Error"

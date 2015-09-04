@@ -1,5 +1,8 @@
 CHANGELOG
 
+1.0.6:
+- Solved error in default URL. "http://localhost:9981/status.xml:9981/status.xml" Thanks to hobbypunk90
+
 1.0.5:
 - Solved finding scripts as post processor
 

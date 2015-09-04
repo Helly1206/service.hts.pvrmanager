@@ -129,6 +129,10 @@ msgctxt "#30025"
 msgid "PVR-manager service not running, unable to schedule recordings"
 msgstr "PVR-manager service ist night aktiv, kann keine Aufnamen zetsen"
 
+msgctxt "#30026"
+msgid "TVHeadend Port"
+msgstr "TVHeadend Port"
+
 msgctxt "#30030"
 msgid "Communication Error"
 msgstr "Kommunikationsfehler"

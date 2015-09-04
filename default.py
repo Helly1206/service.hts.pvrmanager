@@ -32,6 +32,7 @@ EXTGRABBER = xbmc.translatePath(os.path.join(__path__, 'resources', 'lib', 'epgg
 
 CYCLE = 15    # polling cycle
 IDLECYCLE = 1 # polling cycle when idle
+TVHXML = '/status.xml'
 
 PLATFORM_OE = True if ('OPENELEC' in ', '.join(platform.uname()).upper()) else False
 HOST = socket.gethostname()
@@ -80,8 +81,10 @@ class Manager(object):
 
         # TVHeadend server
         self.__server = __addon__.getSetting('TVH_URL')
+        self.__port = __addon__.getSetting('TVH_PORT')
         self.__user = __addon__.getSetting('TVH_USER')
         self.__pass = __addon__.getSetting('TVH_PASS')
+        self.__url = self.__server + ":" + self.__port + TVHXML
         self.__maxattempts = int(__addon__.getSetting('conn_attempts'))
 	self.__sleepbetweenattempts__ = int(re.match('\d+', __addon__.getSetting('conn_delay')).group()) * 1000
 
@@ -128,10 +131,10 @@ class Manager(object):
         while self.__maxattempts > 0:
             try:
                 pwd_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-                pwd_mgr.add_password(None, self.__server, self.__user, self.__pass)
+                pwd_mgr.add_password(None, self.__url, self.__user, self.__pass)
                 handle = urllib2.HTTPBasicAuthHandler(pwd_mgr)
                 opener = urllib2.build_opener(handle)
-                opener.open(self.__server)
+                opener.open(self.__url)
                 urllib2.install_opener(opener)
                 self.__conn_established = True
                 #common.writeLog('Connection to %s established' % (self.__server))
@@ -226,7 +229,7 @@ class Manager(object):
         nodedata = []
         while self.__conn_established:
             try:
-                __f = urllib2.urlopen(self.__server) #, timeout=mytimeout
+                __f = urllib2.urlopen(self.__url) #, timeout=mytimeout
                 __xmlfile = __f.read()
                 __xml = minidom.parseString(__xmlfile)
                 __f.close()

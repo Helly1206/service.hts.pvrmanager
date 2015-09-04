@@ -17,7 +17,8 @@
 	</category>
 	<!-- TVHEADEND SETTINGS -->
 	<category label="30051">
-		<setting id="TVH_URL" type="text" label="30004" default="http://localhost:9981/status.xml" />
+		<setting id="TVH_URL" type="text" label="30004" default="http://localhost" />
+		<setting id="TVH_PORT" type="text" label="30026" default="9981" />
 		<setting id="TVH_USER" type="text" label="30005" default="xbmc" />
 		<setting id="TVH_PASS" type="text" option="hidden" label="30006" default="" />
 		<setting id="separator3" type="sep" />
