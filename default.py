@@ -53,7 +53,7 @@ isUSR = 0b00000
 ### MAIN CLASS
 class Manager(object):
     def __init__(self):
-
+        self.__StartupTime = datetime.datetime.now()
         self.__conn_established = None
         #self.__xml = None
         self.__bState = None
@@ -86,7 +86,7 @@ class Manager(object):
         self.__pass = __addon__.getSetting('TVH_PASS')
         self.__url = self.__server + ":" + self.__port + TVHXML
         self.__maxattempts = int(__addon__.getSetting('conn_attempts'))
-	self.__sleepbetweenattempts__ = int(re.match('\d+', __addon__.getSetting('conn_delay')).group()) * 1000
+        self.__sleepbetweenattempts__ = int(re.match('\d+', __addon__.getSetting('conn_delay')).group()) * 1000
 
         # check for network activity
         self.__network = True if __addon__.getSetting('network').upper() == 'TRUE' else False
@@ -260,9 +260,9 @@ class Manager(object):
                 or (self.__wakeup == "NVRAM" and int(nodedata[0]) < 11): self.__bState |= isREC
 
         # Check if system started up because of actualizing EPG-Data
-        if self.__epg_interval > 0:
+        if (self.__epg_interval > 0) and ((self.__bState & isREC) == 0):
             __curTime = datetime.datetime.now()
-            __epgTime = (__curTime + datetime.timedelta(days=int(__curTime.strftime('%j')) % self.__epg_interval)).replace(hour=self.__epg_time, minute=0, second=0)
+            __epgTime = self.__StartupTime.replace(hour=self.__epg_time, minute=0, second=0)
             if __epgTime < __curTime < __epgTime + datetime.timedelta(minutes=self.__epg_duration): self.__bState |= isEPG
 
         # Check if any postprocess is running
@@ -279,7 +279,7 @@ class Manager(object):
             if nwc and len(nwc.split("\n")) > 0: self.__bState |= isNET
 
         # Check if screensaver is running
-        self.__ScScreensaverActive = xbmc.getCondVisibility('System.ScreenSaverActive')
+        self.__ScreensaverActive = xbmc.getCondVisibility('System.ScreenSaverActive')
 
     def calcNextSched(self):
 
@@ -340,7 +340,7 @@ class Manager(object):
                                common.IconSchedule)
 
         common.writeLog('Instruct the system to shut down')
-	self.setShutdownNotification(methd)
+        self.setShutdownNotification(methd)
 
         if PLATFORM_OE:
             os.system('%s %s %s' % (SETTIMER, self.__wakeup, self.__wakeUpUT))
@@ -443,6 +443,7 @@ class Manager(object):
                 bBtnPwr = self.getShutdown(bBtnPwr)
 
                 if not self.__ScreensaverActive: self.__windowID = xbmcgui.getCurrentWindowId()
+                else: bBtnElse = False # Addition, do power down if in screensaver mode, e.g. after starting manual recording or watch
 
                 common.writeLog('Service polling Net/Post/Rec/EPG: {0:04b}'.format(self.__bState))
 

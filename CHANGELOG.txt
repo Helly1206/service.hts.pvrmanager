@@ -1,5 +1,9 @@
 CHANGELOG
 
+1.0.7:
+- Solved screensaver detection bug
+- Set user activity to none after screensaver activited; to be able to automatically shutdown e.g. after starting manual recording or check something during recording
+
 1.0.6:
 - Solved error in default URL. "http://localhost:9981/status.xml:9981/status.xml" Thanks to hobbypunk90
 
