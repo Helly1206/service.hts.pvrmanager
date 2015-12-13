@@ -134,7 +134,15 @@ msgctxt "#30026"
 msgid "TVHeadend Port"
 msgstr ""
 
-#empty strings from id 30027 to 30029
+msgctxt "#30027"
+msgid "Hardware clock timezone setting"
+msgstr ""
+
+msgctxt "#30028"
+msgid "Amount of tvheadend restart attempts"
+msgstr ""
+
+#empty string with id 30029
 
 msgctxt "#30030"
 msgid "Communication Error"
@@ -144,7 +152,11 @@ msgctxt "#30031"
 msgid "Can't connect to TVHeadend"
 msgstr ""
 
-#empty strings from id 30032 to 30033
+msgctxt "#30032"
+msgid "Let's restart TVHeadend"
+msgstr ""
+
+#empty string with id 30033
 
 msgctxt "#30034"
 msgid "Check for established network connections"

@@ -29,6 +29,7 @@ __LS__ = __addon__.getLocalizedString
 
 SETTIMER = xbmc.translatePath(os.path.join(__path__, 'resources', 'lib', 'settimer.sh'))
 EXTGRABBER = xbmc.translatePath(os.path.join(__path__, 'resources', 'lib', 'epggrab_ext.sh'))
+RESTARTHTS = xbmc.translatePath(os.path.join(__path__, 'resources', 'lib', 'restart_hts.sh'))
 
 CYCLE = 15    # polling cycle
 IDLECYCLE = 1 # polling cycle when idle
@@ -75,7 +76,8 @@ class Manager(object):
     def getSettings(self):
         self.__prerun = int(re.match('\d+', __addon__.getSetting('margin_start')).group())
         self.__postrun = int(re.match('\d+', __addon__.getSetting('margin_stop')).group())
-        self.__wakeup = __addon__.getSetting('wakeup_method')
+        self.__wakeupmethod = __addon__.getSetting('wakeup_method')
+        self.__timezone = __addon__.getSetting('wakeup_timezone')
         self.__counter = int(re.match('\d+', __addon__.getSetting('notification_counter')).group())
         self.__nextsched = True if __addon__.getSetting('next_schedule').upper() == 'TRUE' else False
 
@@ -86,7 +88,8 @@ class Manager(object):
         self.__pass = __addon__.getSetting('TVH_PASS')
         self.__url = self.__server + ":" + self.__port + TVHXML
         self.__maxattempts = int(__addon__.getSetting('conn_attempts'))
-        self.__sleepbetweenattempts__ = int(re.match('\d+', __addon__.getSetting('conn_delay')).group()) * 1000
+        self.__sleepbetweenattempts = int(re.match('\d+', __addon__.getSetting('conn_delay')).group()) * 1000
+        self.__restartattempts = int(__addon__.getSetting('restart_attempts'))
 
         # check for network activity
         self.__network = True if __addon__.getSetting('network').upper() == 'TRUE' else False
@@ -128,27 +131,40 @@ class Manager(object):
 
     def establishConn(self):
         self.__conn_established = False
-        while self.__maxattempts > 0:
-            try:
-                pwd_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-                pwd_mgr.add_password(None, self.__url, self.__user, self.__pass)
-                handle = urllib2.HTTPBasicAuthHandler(pwd_mgr)
-                opener = urllib2.build_opener(handle)
-                opener.open(self.__url)
-                urllib2.install_opener(opener)
-                self.__conn_established = True
-                #common.writeLog('Connection to %s established' % (self.__server))
-                break
-            except Exception, e:
-                common.writeLog('%s' % (e), xbmc.LOGERROR)
-                self.__maxattempts -= 1
-                common.writeLog('Remaining connection attempts to %s: %s' % (self.__server, self.__maxattempts))
-                xbmc.sleep(5000)
-                continue
+        Retry = True
+        while Retry and not self.__conn_established:
+            while self.__maxattempts > 0:
+                try:
+                    pwd_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+                    pwd_mgr.add_password(None, self.__url, self.__user, self.__pass)
+                    handle = urllib2.HTTPBasicAuthHandler(pwd_mgr)
+                    opener = urllib2.build_opener(handle)
+                    opener.open(self.__url)
+                    urllib2.install_opener(opener)
+                    self.__conn_established = True
+                    #common.writeLog('Connection to %s established' % (self.__server))
+                    break
+                except Exception, e:
+                    common.writeLog('%s' % (e), xbmc.LOGERROR)
+                    self.__maxattempts -= 1
+                    common.writeLog('Remaining connection attempts to %s: %s' % (self.__server, self.__maxattempts))
+                    xbmc.sleep(self.__sleepbetweenattempts)
+                    continue
 
-        if not self.__conn_established:
-            common.notifyOSD(__LS__(30030), __LS__(30031), common.IconError)
-            xbmc.sleep(6000)
+            if not self.__conn_established:
+                if self.__restartattempts > 0:
+                    common.notifyOSD(__LS__(30030), __LS__(30032), common.IconError)
+                    self.__restartattempts -= 1
+                    self.__maxattempts = int(__addon__.getSetting('conn_attempts'))
+                    if PLATFORM_OE:
+                        os.system('%s' % (RESTARTHTS))
+                    else:
+                        os.system('sudo %s' % (RESTARTHTS))
+                    xbmc.sleep(6000)
+                    Retry = True
+                else:
+                    common.notifyOSD(__LS__(30030), __LS__(30031), common.IconError)
+                    Retry = False
 
     def getShutdown(self,prevmethd=common.CMD_NONE):
         methd = common.getCommand()
@@ -257,7 +273,7 @@ class Manager(object):
         # then a future recording is happening
         nodedata = self.readXML('next')
         if nodedata and int(nodedata[0]) < (self.__prerun + self.__postrun) \
-                or (self.__wakeup == "NVRAM" and int(nodedata[0]) < 11): self.__bState |= isREC
+                or (self.__wakeupmethod == "NVRAM" and int(nodedata[0]) < 11): self.__bState |= isREC
 
         # Check if system started up because of actualizing EPG-Data
         if (self.__epg_interval > 0) and ((self.__bState & isREC) == 0):
@@ -333,7 +349,7 @@ class Manager(object):
 
         if self.calcNextSched():
             __task = ['Recording', 'EPG-Update']
-            common.writeLog('Wakeup for %s by %s at %s' % (__task[self.__wakeUpReason], self.__wakeup,  self.__wakeUp.strftime('%d.%m.%y %H:%M')))
+            common.writeLog('Wakeup for %s by %s at %s' % (__task[self.__wakeUpReason], self.__wakeupmethod,  self.__wakeUp.strftime('%d.%m.%y %H:%M')))
             if self.__nextsched:
                 common.notifyOSD(__LS__(30017),
                                __LS__(30018 + self.__wakeUpReason) % (self.__wakeUp.strftime('%d.%m.%Y %H:%M')),
@@ -343,9 +359,9 @@ class Manager(object):
         self.setShutdownNotification(methd)
 
         if PLATFORM_OE:
-            os.system('%s %s %s' % (SETTIMER, self.__wakeup, self.__wakeUpUT))
+            os.system('%s %s %s %s' % (SETTIMER, self.__wakeupmethod, self.__wakeUpUT, self.__timezone))
         else:
-            os.system('sudo %s %s %s' % (SETTIMER, self.__wakeup, self.__wakeUpUT))
+            os.system('sudo %s %s %s %s' % (SETTIMER, self.__wakeupmethod, self.__wakeUpUT, self.__timezone))
 
         self.delShutdown()
 
@@ -369,7 +385,7 @@ class Manager(object):
             #common.notifyOSD(__LS__(30030), __LS__(30031), common.IconError)
             return
 
-	common.writeLog('Starting service (%s)' % (self.__rndProcNum))
+        common.writeLog('Starting service (%s)' % (self.__rndProcNum))
 
         self.getSysState(False)
 

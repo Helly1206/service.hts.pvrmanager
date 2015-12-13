@@ -5,6 +5,7 @@
 		<setting id="margin_start" type="labelenum" label="30000" values="1 min|2 min|3 min|4 min|5 min" default="2 min" />
 		<setting id="margin_stop" type="labelenum" label="30001" values="1 min|2 min|3 min|4 min|5 min" default="1 min" />
 		<setting id="wakeup_method" type="labelenum" label="30002" values="ACPI|NVRAM" default="ACPI" />
+		<setting id="wakeup_timezone" type="labelenum" label="30027" values="LOCAL|UTC" default="LOCAL" />
 		<setting id="notification_counter" type="labelenum" label="30003" values="15 sec|30 sec|45 sec|60 sec|75 sec|90 sec|105 sec|120 sec|135 sec|150 sec|165 sec|180 sec" default="60 sec" />
 		<setting id="next_schedule" type="bool" label="30007" default="false" />
 		<setting id="separator1" type="sep" />
@@ -24,6 +25,8 @@
 		<setting id="separator3" type="sep" />
 		<setting id="conn_attempts" type="labelenum" label="30055" values="1|2|3|4|5|6|7|8|9" default="5" />
 		<setting id="conn_delay" type="labelenum" label ="30056" values="|2 sec|4 sec|6 sec|8 sec|10 sec|12 sec|14 sec" default="2 sec" />
+		<setting id="restart_attempts" type="labelenum" label="30028" values="0|1|2|3|4|5|6|7|8|9" default="5" />
+
 	</category>
 	<!-- MAIL SETTINGS -->
 	<category label="30052">

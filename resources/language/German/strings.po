@@ -133,6 +133,14 @@ msgctxt "#30026"
 msgid "TVHeadend Port"
 msgstr "TVHeadend Port"
 
+msgctxt "#30027"
+msgid "Hardware clock timezone setting"
+msgstr "Hardware Uhr Zeitzone Einstellung"
+
+msgctxt "#30028"
+msgid "Amount of tvheadend restart attempts"
+msgstr "Anzahl versuchen zum herstarten vom tvheadend"
+
 msgctxt "#30030"
 msgid "Communication Error"
 msgstr "Kommunikationsfehler"
@@ -140,6 +148,10 @@ msgstr "Kommunikationsfehler"
 msgctxt "#30031"
 msgid "Can't connect to TVHeadend"
 msgstr "keine Verbindung zu TVHeadend"
+
+msgctxt "#30032"
+msgid "Let's restart TVHeadend"
+msgstr "Herstarten zum TVHeadend"
 
 msgctxt "#30034"
 msgid "Check for established network connections"

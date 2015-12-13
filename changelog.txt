@@ -1,5 +1,10 @@
 CHANGELOG
 
+1.0.8:
+- Solved bug in sleep time between restart attempts
+- Added option to select if the hardware clock is running at 'Local' or 'UTC' time
+- Added option to restart tvheadend xx times when connection fails after maximum attempts
+
 1.0.7:
 - Solved screensaver detection bug
 - Set user activity to none after screensaver activited; to be able to automatically shutdown e.g. after starting manual recording or check something during recording

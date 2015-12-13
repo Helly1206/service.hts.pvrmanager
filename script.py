@@ -52,13 +52,13 @@ if len(sys.argv) > 1:
         setShutdown(common.CMD_SHUTDOWN)
     elif s == "suspend":
         common.writeLog('Powerbutton is pressed')
-	setShutdown(common.CMD_SUSPEND)
+        setShutdown(common.CMD_SUSPEND)
     elif s == "hibernate":
         common.writeLog('Powerbutton is pressed')
-	setShutdown(common.CMD_HIBERNATE)
+        setShutdown(common.CMD_HIBERNATE)
     else: # remote
         common.writeLog('Powerbutton is pressed')
-	setShutdown(common.getShutdownAction())
+        setShutdown(common.getShutdownAction())
 else:
     common.writeLog('Powerbutton is pressed')
     #Do a countdown with ok and cancel from script ....
