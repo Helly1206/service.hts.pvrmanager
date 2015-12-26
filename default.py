@@ -154,6 +154,7 @@ class Manager(object):
             if not self.__conn_established:
                 if self.__restartattempts > 0:
                     common.notifyOSD(__LS__(30030), __LS__(30032), common.IconError)
+                    common.writeLog('Remaining restart attempts to %s: %s' % (self.__server, self.__restartattempts))
                     self.__restartattempts -= 1
                     self.__maxattempts = int(__addon__.getSetting('conn_attempts'))
                     if PLATFORM_OE:
