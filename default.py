@@ -137,7 +137,7 @@ class Manager(object):
                 try:
                     pwd_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
                     pwd_mgr.add_password(None, self.__url, self.__user, self.__pass)
-                    handle = urllib2.HTTPBasicAuthHandler(pwd_mgr)
+                    handle = urllib2.HTTPDigestAuthHandler(pwd_mgr)
                     opener = urllib2.build_opener(handle)
                     opener.open(self.__url)
                     urllib2.install_opener(opener)

@@ -1,5 +1,8 @@
 CHANGELOG
 
+1.0.9:
+- Changed authentication type to access tvheadend from basic to digest (required for version 4.2 upwards)
+
 1.0.8:
 - Solved bug in sleep time between restart attempts
 - Added option to select if the hardware clock is running at 'Local' or 'UTC' time
