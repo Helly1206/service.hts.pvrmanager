@@ -6,13 +6,18 @@
 #########################################################
 
 ####################### IMPORTS #########################
-import os, platform, subprocess
+from __future__ import division
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
+from past.utils import old_div
+import os, platform, subprocess, stat
 import socket
 import re
 import random
 import xbmc, xbmcaddon, xbmcgui
 import time, datetime
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 from xml.dom import minidom
 import smtplib
 from email.message import Message
@@ -127,6 +132,12 @@ class Manager(object):
         self.__epg_duration = int(re.match('\d+', __addon__.getSetting('epgtimer_duration')).group())
         self.__epg_grab_ext = True if __addon__.getSetting('epg_grab_ext').upper() == 'TRUE' else False
 
+
+    def mkExe(self,CmdFile):
+        st = os.stat(CmdFile)
+        if not (st.st_mode & stat.S_IEXEC):
+            os.chmod(CmdFile, st.st_mode|stat.S_IEXEC|stat.S_IXGRP|stat.S_IXOTH)
+
     # Connect to TVHeadend and establish connection (log in))
 
     def establishConn(self):
@@ -135,16 +146,16 @@ class Manager(object):
         while Retry and not self.__conn_established:
             while self.__maxattempts > 0:
                 try:
-                    pwd_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+                    pwd_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
                     pwd_mgr.add_password(None, self.__url, self.__user, self.__pass)
-                    handle = urllib2.HTTPDigestAuthHandler(pwd_mgr)
-                    opener = urllib2.build_opener(handle)
+                    handle = urllib.request.HTTPDigestAuthHandler(pwd_mgr)
+                    opener = urllib.request.build_opener(handle)
                     opener.open(self.__url)
-                    urllib2.install_opener(opener)
+                    urllib.request.install_opener(opener)
                     self.__conn_established = True
                     #common.writeLog('Connection to %s established' % (self.__server))
                     break
-                except Exception, e:
+                except Exception as e:
                     common.writeLog('%s' % (e), xbmc.LOGERROR)
                     self.__maxattempts -= 1
                     common.writeLog('Remaining connection attempts to %s: %s' % (self.__server, self.__maxattempts))
@@ -157,6 +168,7 @@ class Manager(object):
                     common.writeLog('Remaining restart attempts to %s: %s' % (self.__server, self.__restartattempts))
                     self.__restartattempts -= 1
                     self.__maxattempts = int(__addon__.getSetting('conn_attempts'))
+                    self.mkExe(RESTARTHTS)
                     if PLATFORM_OE:
                         os.system('%s' % (RESTARTHTS))
                     else:
@@ -216,7 +228,7 @@ class Manager(object):
                 __s_conn.close()
                 common.writeLog('Mail delivered to %s.' % (self.__smtpto))
                 return True
-            except Exception, e:
+            except Exception as e:
                 common.writeLog('%s' % (e), xbmc.LOGERROR)
                 common.writeLog('Mail could not be delivered. Check your settings.', xbmc.LOGERROR)
                 return False
@@ -246,7 +258,7 @@ class Manager(object):
         nodedata = []
         while self.__conn_established:
             try:
-                __f = urllib2.urlopen(self.__url) #, timeout=mytimeout
+                __f = urllib.request.urlopen(self.__url) #, timeout=mytimeout
                 __xmlfile = __f.read()
                 __xml = minidom.parseString(__xmlfile)
                 __f.close()
@@ -257,7 +269,7 @@ class Manager(object):
                     del nodes
                 __xml.unlink()
                 break
-            except Exception, e:
+            except Exception as e:
                 common.writeLog("Could not read from %s" % (self.__server), xbmc.LOGERROR)
                 self.establishConn()
         return nodedata
@@ -359,6 +371,7 @@ class Manager(object):
         common.writeLog('Instruct the system to shut down')
         self.setShutdownNotification(methd)
 
+        self.mkExe(SETTIMER)
         if PLATFORM_OE:
             os.system('%s %s %s %s' % (SETTIMER, self.__wakeupmethod, self.__wakeUpUT, self.__timezone))
         else:
@@ -391,6 +404,7 @@ class Manager(object):
         self.getSysState(False)
 
         if self.__bState:
+            self.mkExe(EXTGRABBER)
             if (self.__bState & isEPG) and self.__epg_grab_ext and os.path.isfile(EXTGRABBER):
                 common.writeLog('Starting script for grabbing external EPG')
                 #
@@ -398,7 +412,7 @@ class Manager(object):
                 #
                 try:
                     os.system(EXTGRABBER)
-                except Exception, e:
+                except Exception as e:
                     common.writeLog('Could not start external EPG-Grabber', xbmc.LOGERROR)
              
         bKillMain = False           
@@ -407,7 +421,7 @@ class Manager(object):
         bWasInBusyLoop = False
         idle = xbmc.getGlobalIdleTime()
         counter = 0
-        counts = CYCLE/IDLECYCLE
+        counts = old_div(CYCLE,IDLECYCLE)
 
         ### START MAIN LOOP ###
         while (not xbmc.abortRequested) and (not bKillMain):

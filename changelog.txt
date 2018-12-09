@@ -1,5 +1,9 @@
 CHANGELOG
 
+1.0.10: From Kodi 18
+- Added making scripts executable
+- Converted to python 3 for future compatibility
+
 1.0.9:
 - Changed authentication type to access tvheadend from basic to digest (required for version 4.2 upwards)
 
