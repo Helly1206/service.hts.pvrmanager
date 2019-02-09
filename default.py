@@ -6,18 +6,16 @@
 #########################################################
 
 ####################### IMPORTS #########################
-from __future__ import division
-from future import standard_library
-standard_library.install_aliases()
-from builtins import object
-from past.utils import old_div
 import os, platform, subprocess, stat
 import socket
 import re
 import random
 import xbmc, xbmcaddon, xbmcgui
 import time, datetime
-import urllib.request, urllib.error, urllib.parse
+if sys.version_info.major == 3:
+    from urllib.request import HTTPPasswordMgrWithDefaultRealm, HTTPDigestAuthHandler, build_opener, install_opener, urlopen
+else:
+    from urllib2 import HTTPPasswordMgrWithDefaultRealm, HTTPDigestAuthHandler, build_opener, install_opener, urlopen
 from xml.dom import minidom
 import smtplib
 from email.message import Message
@@ -146,12 +144,12 @@ class Manager(object):
         while Retry and not self.__conn_established:
             while self.__maxattempts > 0:
                 try:
-                    pwd_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+                    pwd_mgr = HTTPPasswordMgrWithDefaultRealm()
                     pwd_mgr.add_password(None, self.__url, self.__user, self.__pass)
-                    handle = urllib.request.HTTPDigestAuthHandler(pwd_mgr)
-                    opener = urllib.request.build_opener(handle)
+                    handle = HTTPDigestAuthHandler(pwd_mgr)
+                    opener = build_opener(handle)
                     opener.open(self.__url)
-                    urllib.request.install_opener(opener)
+                    install_opener(opener)
                     self.__conn_established = True
                     #common.writeLog('Connection to %s established' % (self.__server))
                     break
@@ -258,7 +256,7 @@ class Manager(object):
         nodedata = []
         while self.__conn_established:
             try:
-                __f = urllib.request.urlopen(self.__url) #, timeout=mytimeout
+                __f = urlopen(self.__url) #, timeout=mytimeout
                 __xmlfile = __f.read()
                 __xml = minidom.parseString(__xmlfile)
                 __f.close()
@@ -421,7 +419,7 @@ class Manager(object):
         bWasInBusyLoop = False
         idle = xbmc.getGlobalIdleTime()
         counter = 0
-        counts = old_div(CYCLE,IDLECYCLE)
+        counts = CYCLE//IDLECYCLE
 
         ### START MAIN LOOP ###
         while (not xbmc.abortRequested) and (not bKillMain):

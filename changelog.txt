@@ -1,5 +1,8 @@
 CHANGELOG
 
+1.0.11: From Kodi 18
+- Updated python 3 conversion to work correctly for python2 and python3
+
 1.0.10: From Kodi 18
 - Added making scripts executable
 - Converted to python 3 for future compatibility

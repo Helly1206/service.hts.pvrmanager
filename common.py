@@ -6,9 +6,6 @@
 #########################################################
 
 ####################### IMPORTS #########################
-from __future__ import division
-from builtins import str
-from past.utils import old_div
 import os, subprocess
 import xbmc, xbmcaddon, xbmcgui
 import time, datetime
@@ -124,7 +121,7 @@ def dialogProgress(title, message, duration):
     # actualize progressbar
     while __bar < duration and not pb.iscanceled():
         __bar += 1
-        __percent = int(old_div(__bar * 100, duration))
+        __percent = int((__bar * 100)/duration)
         pb.update(__percent, message % (duration - __bar))
         xbmc.sleep(1000)
     pb.close()
