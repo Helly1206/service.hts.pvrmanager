@@ -1,5 +1,8 @@
 CHANGELOG
 
+1.1.0: (2021-05-09) From Kodi 18
+- Changed versions for Kodi 18 and fixed api changes
+
 1.0.11: From Kodi 18
 - Updated python 3 conversion to work correctly for python2 and python3
 

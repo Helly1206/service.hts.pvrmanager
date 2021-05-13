@@ -11,6 +11,7 @@ import socket
 import re
 import random
 import xbmc, xbmcaddon, xbmcgui
+import xbmcvfs
 import time, datetime
 if sys.version_info.major == 3:
     from urllib.request import HTTPPasswordMgrWithDefaultRealm, HTTPDigestAuthHandler, build_opener, install_opener, urlopen
@@ -30,9 +31,9 @@ __path__ = __addon__.getAddonInfo('path')
 __version__ = __addon__.getAddonInfo('version')
 __LS__ = __addon__.getLocalizedString
 
-SETTIMER = xbmc.translatePath(os.path.join(__path__, 'resources', 'lib', 'settimer.sh'))
-EXTGRABBER = xbmc.translatePath(os.path.join(__path__, 'resources', 'lib', 'epggrab_ext.sh'))
-RESTARTHTS = xbmc.translatePath(os.path.join(__path__, 'resources', 'lib', 'restart_hts.sh'))
+SETTIMER = xbmcvfs.translatePath(os.path.join(__path__, 'resources', 'lib', 'settimer.sh'))
+EXTGRABBER = xbmcvfs.translatePath(os.path.join(__path__, 'resources', 'lib', 'epggrab_ext.sh'))
+RESTARTHTS = xbmcvfs.translatePath(os.path.join(__path__, 'resources', 'lib', 'restart_hts.sh'))
 
 CYCLE = 15    # polling cycle
 IDLECYCLE = 1 # polling cycle when idle
@@ -184,7 +185,7 @@ class Manager(object):
             self.delShutdown()
             methd = common.CMD_NONE
         else:
-	    if (methd != prevmethd) and self.__bState:
+            if (methd != prevmethd) and self.__bState:
                 common.writeLog('Powerbutton is pressed but shutdown not allowed now')
                 if (self.__bState & isREC):
                     common.notifyOSD(__LS__(30015), __LS__(30020), common.IconStop)  # Notify 'Recording in progress'
@@ -242,15 +243,15 @@ class Manager(object):
             common.dialogOK(__LS__(30067), __LS__(30069) % (__addon__.getSetting('smtp_to')))
 
     def setShutdownNotification(self,methd=common.CMD_NONE):
-	if methd == common.CMD_SHUTDOWN: 
-		common.notifyOSD(__LS__(30010), __LS__(30012), common.IconSchedule )
-		common.writeLog('Shutdown action: %s' % __LS__(30012))
-	elif methd == common.CMD_SUSPEND: 
-		common.notifyOSD(__LS__(30010), __LS__(30013), common.IconSchedule )
-		common.writeLog('Shutdown action: %s' % __LS__(30013))
-	elif methd == common.CMD_HIBERNATE: 
-		common.notifyOSD(__LS__(30010), __LS__(30014), common.IconSchedule )
-		common.writeLog('Shutdown action: %s' % __LS__(30014))
+        if methd == common.CMD_SHUTDOWN: 
+            common.notifyOSD(__LS__(30010), __LS__(30012), common.IconSchedule )
+            common.writeLog('Shutdown action: %s' % __LS__(30012))
+        elif methd == common.CMD_SUSPEND: 
+            common.notifyOSD(__LS__(30010), __LS__(30013), common.IconSchedule )
+            common.writeLog('Shutdown action: %s' % __LS__(30013))
+        elif methd == common.CMD_HIBERNATE: 
+            common.notifyOSD(__LS__(30010), __LS__(30014), common.IconSchedule )
+            common.writeLog('Shutdown action: %s' % __LS__(30014))
 
     def readXML(self, xmlnode):
         nodedata = []
@@ -422,7 +423,7 @@ class Manager(object):
         counts = CYCLE//IDLECYCLE
 
         ### START MAIN LOOP ###
-        while (not xbmc.abortRequested) and (not bKillMain):
+        while (not xbmc.Monitor().abortRequested()) and (not bKillMain):
             time.sleep(IDLECYCLE)
             #idle += IDLECYCLE
 
@@ -441,7 +442,7 @@ class Manager(object):
             idle = xbmcIdle
 
             ### START BUSY LOOP ###
-            while (not xbmc.abortRequested and self.__bState): # and not self.__bBtnElse):
+            while (not xbmc.Monitor().abortRequested() and self.__bState): # and not self.__bBtnElse):
                 bWasInBusyLoop = True
                 time.sleep(CYCLE)
                 idle += CYCLE

@@ -8,6 +8,7 @@
 ####################### IMPORTS #########################
 import os, subprocess
 import xbmc, xbmcaddon, xbmcgui
+import xbmcvfs
 import time, datetime
 #########################################################
 
@@ -22,13 +23,13 @@ CMD_SENDMAIL  = 4
 __addon__ = xbmcaddon.Addon()
 __addonname__ = __addon__.getAddonInfo('id')
 __path__ = __addon__.getAddonInfo('path')
-__datapath__ = xbmc.translatePath(os.path.join('special://temp/', __addonname__))
+__datapath__ = xbmcvfs.translatePath(os.path.join('special://temp/', __addonname__))
 __logfile__ = os.path.join(__datapath__, __addonname__ + '.log')
 __shutdownaction__ = __addon__.getSetting('shutdown_action')
 
-IconStop = xbmc.translatePath(os.path.join(__path__, 'resources', 'media', 'stop.png'))
-IconError = xbmc.translatePath(os.path.join(__path__, 'resources', 'media', 'error.png'))
-IconSchedule = xbmc.translatePath(os.path.join(__path__, 'resources', 'media', 'schedule.png'))
+IconStop = xbmcvfs.translatePath(os.path.join(__path__, 'resources', 'media', 'stop.png'))
+IconError = xbmcvfs.translatePath(os.path.join(__path__, 'resources', 'media', 'error.png'))
+IconSchedule = xbmcvfs.translatePath(os.path.join(__path__, 'resources', 'media', 'schedule.png'))
 
 # parameters
 PID = 'pid'
@@ -70,7 +71,10 @@ def incParam(param):
 #########################################################
 def getProcessPID(process):
     _syscmd = subprocess.Popen(['pidof','-x', process], stdout=subprocess.PIPE)
-    PID = _syscmd.stdout.read().strip()
+    try:
+        PID = int(_syscmd.stdout.read().strip())
+    except:
+        PID = 0
     return PID if PID > 0 else False
 
 # check for PID, if no PID available, user or system has
@@ -127,7 +131,7 @@ def dialogProgress(title, message, duration):
     pb.close()
     return pb.iscanceled()
 
-def writeLog(message, level=xbmc.LOGNOTICE, forcePrint=False):
+def writeLog(message, level=xbmc.LOGINFO, forcePrint=False):
     if getParam(MSG) == message and not forcePrint:
         incParam(MSGCNT)
         return
@@ -147,7 +151,7 @@ def writeLog(message, level=xbmc.LOGNOTICE, forcePrint=False):
             __f.close()
         except Exception as e:
             xbmc.log('%s: %s' % (__addonname__, e), xbmc.LOGERROR)
-        xbmc.log('%s: %s' % (__addonname__, message.encode('utf-8')), level)    
+        xbmc.log('%s: %s' % (__addonname__, message), level)    
 
 def getShutdownAction():
     methd = CMD_SHUTDOWN # default shutdown
